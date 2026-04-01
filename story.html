@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FLUFFLEBOOTS — The Full Poem</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #fdf6e3;
+      --warm-white: #fffdf7;
+      --gold: #c8902a;
+      --deep-gold: #8b5e0a;
+      --brown: #3d2b1f;
+      --soft-brown: #7a5c3e;
+      --bee-yellow: #f5c842;
+      --text: #2c1a0e;
+      --muted: #8a6a50;
+    }
+
+    body {
+      background-color: var(--cream);
+      color: var(--text);
+      font-family: 'Lora', serif;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(253, 246, 227, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(200, 144, 42, 0.2);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+
+    .nav-back {
+      font-family: 'Lora', serif;
+      font-size: 0.85rem;
+      color: var(--soft-brown);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--gold); }
+
+    /* HERO STRIP */
+    .story-hero {
+      padding: 10rem 4rem 5rem;
+      text-align: center;
+      background: linear-gradient(180deg, var(--cream) 0%, var(--warm-white) 100%);
+      position: relative;
+    }
+
+    .story-eyebrow {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--gold);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards 0.2s;
+    }
+
+    .story-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(3rem, 8vw, 7rem);
+      color: var(--brown);
+      line-height: 0.95;
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards 0.4s;
+    }
+
+    .story-author {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--muted);
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards 0.6s;
+    }
+
+    .story-divider {
+      width: 60px;
+      height: 2px;
+      background: var(--gold);
+      margin: 3rem auto;
+      opacity: 0;
+      animation: fadeIn 0.7s ease forwards 0.8s;
+    }
+
+    /* POEM BODY */
+    .poem-body {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 2rem 8rem;
+    }
+
+    .stanza {
+      margin-bottom: 3.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .stanza.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .stanza p {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      line-height: 2;
+      color: var(--text);
+      text-align: center;
+    }
+
+    /* highlighted words */
+    .stanza .big-word {
+      font-family: 'Playfair Display', serif;
+      font-style: normal;
+      font-weight: 900;
+      color: var(--gold);
+      font-size: 1.1em;
+    }
+
+    /* illustration insets */
+    .illus-inset {
+      margin: 2rem auto 3.5rem;
+      max-width: 580px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .illus-inset.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .illus-inset img {
+      width: 100%;
+      display: block;
+      border-radius: 2px;
+      box-shadow: 0 12px 40px rgba(61, 43, 31, 0.15);
+    }
+
+    .illus-inset figcaption {
+      text-align: center;
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* section break bee */
+    .section-bee {
+      text-align: center;
+      font-size: 1.8rem;
+      margin: 1rem 0 3rem;
+      opacity: 0.5;
+    }
+
+    /* END CTA */
+    .end-cta {
+      background: var(--brown);
+      padding: 5rem 3rem;
+      text-align: center;
+      color: var(--cream);
+    }
+
+    .end-cta h2 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      margin-bottom: 1rem;
+    }
+
+    .end-cta p {
+      font-family: 'Lora', serif;
+      font-size: 1rem;
+      color: rgba(253,246,227,0.7);
+      margin-bottom: 2rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.8;
+    }
+
+    .end-cta a {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--cream);
+      padding: 0.85rem 2rem;
+      font-family: 'Lora', serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .end-cta a:hover { background: var(--deep-gold); transform: translateY(-2px); }
+
+    footer {
+      background: #1a0d06;
+      color: rgba(253, 246, 227, 0.4);
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Lora', serif;
+      font-size: 0.8rem;
+    }
+
+    footer a { color: var(--gold); text-decoration: none; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @media (max-width: 700px) {
+      nav { padding: 1rem 1.5rem; }
+      .story-hero { padding: 8rem 2rem 3rem; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">FLUFFLEBOOTS</a>
+    <a href="index.html" class="nav-back">← Back to Home</a>
+  </nav>
+
+  <div class="story-hero">
+    <p class="story-eyebrow">The Complete Poem</p>
+    <h1 class="story-title">FLUFFLEBOOTS</h1>
+    <p class="story-author">by Melissa Nethken</p>
+    <div class="story-divider"></div>
+  </div>
+
+  <div class="poem-body">
+
+    <figure class="illus-inset">
+      <img src="spread1.png" alt="Boy staring at fluffy dog while cat sleeps on the chair">
+      <figcaption>Spread 1</figcaption>
+    </figure>
+
+    <div class="stanza">
+      <p>
+        Why aren't dogs called <span class="big-word">FLUFFLEBOOTS</span>?<br>
+        Why aren't cats called <span class="big-word">KAZOOS</span>?<br>
+        Who picked out those boring names?<br>
+        It wasn't me. Did you?
+      </p>
+    </div>
+
+    <div class="stanza">
+      <p>
+        Why is blue called blue at all?<br>
+        I'd like to call it <span class="big-word">WHUMM</span>.<br>
+        And rain, I'll call it <span class="big-word">TIPPITY TAP</span><br>
+        Thunder I'll call <span class="big-word">GA BRUM</span>.
+      </p>
+    </div>
+
+    <div class="stanza">
+      <p>
+        Someone made these words up once<br>
+        and everyone agreed.<br>
+        They shook on it and wrote it down<br>
+        and called it A-B-C.
+      </p>
+    </div>
+
+    <div class="stanza">
+      <p>
+        But here's the thing about a word —<br>
+        It's just a sound we chose.<br>
+        Nobody asked the elephant<br>
+        what to call her nose.
+      </p>
+    </div>
+
+    <div class="section-bee">🐝</div>
+
+    <figure class="illus-inset">
+      <img src="spread2.png" alt="Grizzly bear with bumblebee on nose in a wildflower meadow">
+      <figcaption>Spread 2</figcaption>
+    </figure>
+
+    <div class="stanza">
+      <p>
+        Nobody asked the bumblebee<br>
+        what she calls her buzz.<br>
+        Nobody asked the grizzly bear<br>
+        what he calls his fuzz.
+      </p>
+    </div>
+
+    <div class="stanza">
+      <p>
+        Nobody asked the belly button.<br>
+        Nobody asked the knee.<br>
+        Nobody asked them for their names —<br>
+        not anyone. Not me.
+      </p>
+    </div>
+
+    <div class="stanza">
+      <p>
+        I've got some words all of my own,<br>
+        they live behind my eyes.<br>
+        <span class="big-word">ZIBBLEFRIZZ</span> and <span class="big-word">BOOFNSNOOT</span>.<br>
+        Each one a small surprise.
+      </p>
+    </div>
+
+    <div class="stanza">
+      <p>
+        I think I'll name the clouds today.<br>
+        I think I'll name the sheep.<br>
+        I'll pick a word that names the way<br>
+        I feel when I'm asleep.
+      </p>
+    </div>
+
+    <div class="stanza">
+      <p>
+        If I can name a raindrop<br>
+        Then you can name a star.<br>
+        So what's YOUR word for thunder?<br>
+        Shout it loud and far!
+      </p>
+    </div>
+
+    <div class="stanza">
+      <p>
+        The whole wide world is waiting<br>
+        for names from someone new.<br>
+        Maybe someone is <span class="big-word">FLUFFLEBOOTS</span>.<br>
+        Maybe someone is you.
+      </p>
+    </div>
+
+  </div>
+
+  <div class="end-cta">
+    <h2>For Publishing Inquiries</h2>
+    <p>FLUFFLEBOOTS is a completed picture book manuscript for ages 3–4, the first in a planned series of books that hide a hard philosophical question inside a small, delightful one.</p>
+    <a href="mailto:mkorzun@gmail.com">mkorzun@gmail.com</a>
+  </div>
+
+  <footer>
+    <span>© 2025 Melissa Nethken. All rights reserved.</span>
+    <a href="index.html">← Back to Home</a>
+  </footer>
+
+  <script>
+    const items = document.querySelectorAll('.stanza, .illus-inset');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 60);
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    items.forEach(el => obs.observe(el));
+  </script>
+
+</body>
+</html>

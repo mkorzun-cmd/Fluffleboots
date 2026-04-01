@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FLUFFLEBOOTS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #fdf6e3;
+      --warm-white: #fffdf7;
+      --gold: #c8902a;
+      --deep-gold: #8b5e0a;
+      --brown: #3d2b1f;
+      --soft-brown: #7a5c3e;
+      --bee-yellow: #f5c842;
+      --meadow: #7aab6e;
+      --sky: #a8c9e0;
+      --text: #2c1a0e;
+      --muted: #8a6a50;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--cream);
+      color: var(--text);
+      font-family: 'Lora', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* TEXTURE OVERLAY */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(253, 246, 227, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(200, 144, 42, 0.2);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-family: 'Lora', serif;
+      font-size: 0.85rem;
+      color: var(--soft-brown);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      padding-top: 70px;
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 6rem 4rem 6rem 6rem;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.2s;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(3.5rem, 7vw, 6rem);
+      line-height: 0.95;
+      color: var(--brown);
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.4s;
+    }
+
+    .hero-title span {
+      color: var(--gold);
+      display: block;
+    }
+
+    .hero-author {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--soft-brown);
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.6s;
+    }
+
+    .hero-tagline {
+      font-family: 'Lora', serif;
+      font-size: 1.15rem;
+      line-height: 1.75;
+      color: var(--text);
+      max-width: 480px;
+      margin-bottom: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.8s;
+    }
+
+    .hero-tagline em {
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 1s;
+    }
+
+    .btn-primary {
+      background: var(--gold);
+      color: var(--warm-white);
+      padding: 0.85rem 2rem;
+      font-family: 'Lora', serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      display: inline-block;
+    }
+    .btn-primary:hover { background: var(--deep-gold); transform: translateY(-2px); }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--gold);
+      padding: 0.85rem 2rem;
+      font-family: 'Lora', serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1.5px solid var(--gold);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+    .btn-secondary:hover { background: var(--gold); color: var(--warm-white); transform: translateY(-2px); }
+
+    /* HERO RIGHT — illustration area */
+    .hero-right {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, #f5e6c8 0%, #e8d5a0 50%, #d4c080 100%);
+    }
+
+    .hero-illustration {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      animation: fadeIn 1.2s ease forwards 0.6s;
+    }
+
+    .hero-right-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, var(--cream) 0%, transparent 15%);
+    }
+
+    /* floating words */
+    .float-word {
+      position: absolute;
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-style: italic;
+      color: rgba(200, 144, 42, 0.15);
+      pointer-events: none;
+      animation: floatDrift linear infinite;
+      white-space: nowrap;
+    }
+
+    @keyframes floatDrift {
+      0% { transform: translateY(0px) rotate(-2deg); }
+      50% { transform: translateY(-20px) rotate(2deg); }
+      100% { transform: translateY(0px) rotate(-2deg); }
+    }
+
+    /* PHILOSOPHY SECTION */
+    .philosophy {
+      background: var(--brown);
+      color: var(--cream);
+      padding: 7rem 6rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .philosophy::before {
+      content: '"';
+      position: absolute;
+      top: -2rem;
+      left: 3rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 20rem;
+      color: rgba(200, 144, 42, 0.08);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .philosophy-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .philosophy-label {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--bee-yellow);
+      margin-bottom: 1.5rem;
+    }
+
+    .philosophy-quote {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+      line-height: 1.5;
+      color: var(--cream);
+      margin-bottom: 1.5rem;
+    }
+
+    .philosophy-attribution {
+      font-family: 'Lora', serif;
+      font-size: 0.85rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+    }
+
+    .philosophy-text {
+      font-family: 'Lora', serif;
+      font-size: 1rem;
+      line-height: 1.85;
+      color: rgba(253, 246, 227, 0.8);
+    }
+
+    .philosophy-text p + p { margin-top: 1.2rem; }
+
+    .philosophy-text strong {
+      color: var(--bee-yellow);
+      font-weight: 600;
+    }
+
+    /* POEM PREVIEW SECTION */
+    .poem-preview {
+      padding: 7rem 6rem;
+      background: var(--warm-white);
+      position: relative;
+    }
+
+    .section-label {
+      text-align: center;
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      color: var(--brown);
+      margin-bottom: 4rem;
+    }
+
+    .poem-stanzas {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 3rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .stanza-card {
+      background: var(--cream);
+      padding: 2.5rem 2rem;
+      border-top: 3px solid var(--gold);
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stanza-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(61, 43, 31, 0.1);
+    }
+
+    .stanza-card p {
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 0.95rem;
+      line-height: 1.9;
+      color: var(--text);
+    }
+
+    .stanza-number {
+      position: absolute;
+      top: -1rem;
+      right: 1.5rem;
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 3rem;
+      color: rgba(200, 144, 42, 0.12);
+      line-height: 1;
+    }
+
+    .poem-cta {
+      text-align: center;
+      margin-top: 3.5rem;
+    }
+
+    /* ILLUSTRATIONS SECTION */
+    .illustrations {
+      padding: 7rem 6rem;
+      background: var(--cream);
+    }
+
+    .illus-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .illus-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .illus-card img {
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .illus-card:hover img { transform: scale(1.04); }
+
+    .illus-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(45, 27, 10, 0.9) 0%, transparent 100%);
+      padding: 2rem 1.5rem 1.5rem;
+      color: var(--cream);
+      font-family: 'Lora', serif;
+      font-style: italic;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      transform: translateY(100%);
+      transition: transform 0.4s ease;
+    }
+
+    .illus-card:hover .illus-caption { transform: translateY(0); }
+
+    /* CONTACT SECTION */
+    .contact {
+      background: linear-gradient(135deg, #2c1a0e 0%, #3d2b1f 60%, #1e110a 100%);
+      color: var(--cream);
+      padding: 7rem 6rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact::after {
+      content: 'FLUFFLEBOOTS';
+      position: absolute;
+      bottom: -3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 8rem;
+      color: rgba(200, 144, 42, 0.05);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .contact-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      margin-bottom: 1.5rem;
+      color: var(--cream);
+    }
+
+    .contact-text {
+      font-family: 'Lora', serif;
+      font-size: 1rem;
+      line-height: 1.8;
+      color: rgba(253, 246, 227, 0.75);
+      max-width: 540px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .contact-email {
+      display: inline-block;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.3rem;
+      color: var(--bee-yellow);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(245, 200, 66, 0.4);
+      padding-bottom: 0.2rem;
+      transition: border-color 0.2s;
+    }
+    .contact-email:hover { border-color: var(--bee-yellow); }
+
+    /* FOOTER */
+    footer {
+      background: #1a0d06;
+      color: rgba(253, 246, 227, 0.4);
+      padding: 2rem 6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Lora', serif;
+      font-size: 0.8rem;
+    }
+
+    footer a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* SCROLL REVEAL */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { height: 50vw; min-height: 300px; }
+      .hero-left { padding: 4rem 2rem; }
+      .philosophy { padding: 4rem 2rem; }
+      .philosophy-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .poem-preview { padding: 4rem 2rem; }
+      .poem-stanzas { grid-template-columns: 1fr; }
+      .illustrations { padding: 4rem 2rem; }
+      .illus-grid { grid-template-columns: 1fr; }
+      .contact { padding: 4rem 2rem; }
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1rem; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="nav-logo">FLUFFLEBOOTS</a>
+    <ul class="nav-links">
+      <li><a href="#philosophy">Philosophy</a></li>
+      <li><a href="#poem">The Poem</a></li>
+      <li><a href="#illustrations">Illustrations</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="story.html">Read the Book →</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <p class="hero-eyebrow">A picture book for ages 3–4 &nbsp;·&nbsp; And their wondering adults</p>
+      <h1 class="hero-title">
+        FLUFFLEBOOTS
+      </h1>
+      <p class="hero-author">by Melissa Nethken</p>
+      <p class="hero-tagline">
+        Why aren't dogs called <em>FLUFFLEBOOTS</em>? Why aren't cats called <em>KAZOOS</em>?<br><br>
+        A child discovers the oldest philosophical secret: the world was named by someone — and nobody asked <em>you</em>.
+      </p>
+      <div class="btn-group">
+        <a href="story.html" class="btn-primary">Read the Full Book</a>
+        <a href="#contact" class="btn-secondary">Get in Touch</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <img src="spread1.png" alt="A boy stares at his fluffy dog while the cat sleeps on" class="hero-illustration">
+      <div class="hero-right-overlay"></div>
+    </div>
+  </section>
+
+  <!-- PHILOSOPHY -->
+  <section class="philosophy" id="philosophy">
+    <div class="philosophy-inner">
+      <div class="reveal">
+        <p class="philosophy-label">The Idea Behind the Book</p>
+        <blockquote class="philosophy-quote">
+          "The limits of my language are the limits of my world."
+        </blockquote>
+        <p class="philosophy-attribution">— Ludwig Wittgenstein, <em>Tractatus Logico-Philosophicus</em></p>
+      </div>
+      <div class="reveal">
+        <div class="philosophy-text">
+          <p>Wittgenstein's great insight was that <strong>words don't just describe the world — they shape what world is available to us.</strong> If you have no word for something, it is very hard to hold it as a concept.</p>
+          <p>Children understand this instinctively, before anyone tells them to stop asking those kinds of questions. Around ages three to five, most children have a moment where they suddenly feel it: <strong>who decided dog meant dog?</strong> Someone made that up. Everyone agreed. And now we're all just... living with it.</p>
+          <p>That moment of realization — that the world is <em>named</em>, not <em>given</em> — is one of the most profound things a human mind can experience. FLUFFLEBOOTS gives that moment a home, a bounce, and a bee on a bear's nose.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- POEM PREVIEW -->
+  <section class="poem-preview" id="poem">
+    <p class="section-label reveal">From the book</p>
+    <h2 class="section-title reveal">A Taste of the Poem</h2>
+    <div class="poem-stanzas">
+      <div class="stanza-card reveal">
+        <span class="stanza-number">1</span>
+        <p>
+          Why aren't dogs called FLUFFLEBOOTS?<br>
+          Why aren't cats called KAZOOS?<br>
+          Who picked out those boring names?<br>
+          It wasn't me. Did you?
+        </p>
+      </div>
+      <div class="stanza-card reveal">
+        <span class="stanza-number">2</span>
+        <p>
+          But here's the thing about a word —<br>
+          It's just a sound we chose.<br>
+          Nobody asked the elephant<br>
+          what to call her nose.
+        </p>
+      </div>
+      <div class="stanza-card reveal">
+        <span class="stanza-number">3</span>
+        <p>
+          Nobody asked the belly button.<br>
+          Nobody asked the knee.<br>
+          Nobody asked them for their names —<br>
+          not anyone. Not me.
+        </p>
+      </div>
+    </div>
+    <div class="poem-cta reveal">
+      <a href="story.html" class="btn-primary">Read the Complete Poem →</a>
+    </div>
+  </section>
+
+  <!-- ILLUSTRATIONS -->
+  <section class="illustrations" id="illustrations">
+    <p class="section-label reveal">Inside the Book</p>
+    <h2 class="section-title reveal">From the Pages</h2>
+    <div class="illus-grid">
+      <div class="illus-card reveal">
+        <img src="spread1.png" alt="Boy staring at fluffy dog, cat asleep on chair">
+        <div class="illus-caption">
+          "Why aren't dogs called FLUFFLEBOOTS? Who picked out those boring names?"
+        </div>
+      </div>
+      <div class="illus-card reveal">
+        <img src="spread2.png" alt="Grizzly bear with bumblebee on nose in a wildflower meadow">
+        <div class="illus-caption">
+          "Nobody asked the bumblebee what she calls her buzz. Nobody asked the grizzly bear what he calls his fuzz."
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <h2 class="contact-title reveal">For Publishers & Inquiries</h2>
+    <p class="contact-text reveal">
+      FLUFFLEBOOTS is a completed picture book manuscript, ages 3–4, told in bouncy rhyming verse. It is the first in a planned series of books that hide a big philosophical question inside a small, delightful one.
+    </p>
+    <a href="mailto:mkorzun@gmail.com" class="contact-email reveal">mkorzun@gmail.com</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>© 2025 Melissa Nethken. All rights reserved.</span>
+    <a href="story.html">Read the Full Book →</a>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
